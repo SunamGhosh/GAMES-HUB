@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sunam Games Hub</title>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      color: #333;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 0 25px rgba(0,0,0,0.3);
+    }
+    h1 {
+      margin-top: 0;
+      color: #0072ff;
+    }
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin: 15px 0 30px 0;
+    }
+    .games-grid button {
+      background: #0072ff;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+      padding: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      user-select: none;
+    }
+    .games-grid button:hover, .games-grid button.active {
+      background: #0056b3;
+      transform: scale(1.05);
+    }
+    /* Common game container style */
+    .game {
+      display: none;
+    }
+    .game.active {
+      display: block;
+    }
+    /* Ludo Styles */
+    .ludo-board {
+      display: grid;
+      grid-template-columns: repeat(15, 30px);
+      grid-template-rows: repeat(15, 30px);
+      gap: 2px;
+      justify-content: center;
+      margin: 10px auto 15px;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    .ludo-cell {
+      width: 30px;
+      height: 30px;
+      background-color: #f0f0f0;
+      border: 1px solid #ddd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      font-weight: bold;
+      color: #999;
+    }
+    .player {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+    }
+    .player1 {
+      background-color: #0072ff;
+    }
+    .player2 {
+      background-color: #ff5733;
+    }
+    .dice {
+      font-size: 48px;
+      margin: 15px 0;
+      color: #0072ff;
+      user-select: none;
+    }
+    .ludo-controls button {
+      background: #0072ff;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.3s;
+      user-select: none;
+    }
+    .ludo-controls button:disabled {
+      background: #777;
+      cursor: not-allowed;
+    }
+    .ludo-controls button:hover:not(:disabled) {
+      background: #0056b3;
+    }
+    #ludo-message {
+      margin-top: 10px;
+      font-weight: bold;
+      min-height: 1.5em;
+    }
+
+    /* Quiz Game */
+    #quiz h2 {
+      margin-bottom: 15px;
+      color: #0072ff;
+    }
+    #quiz .question {
+      font-weight: bold;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    #quiz .answers button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      background: #0072ff;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s;
+      user-select: none;
+    }
+    #quiz .answers button:hover {
+      background: #0056b3;
+    }
+    #quiz .score {
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 15px;
+    }
+    #quiz .next-btn {
+      margin-top: 15px;
+      padding: 8px 20px;
+      background: #0072ff;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+    }
+    #quiz .next-btn:disabled {
+      background: #888;
+      cursor: not-allowed;
+    }
+
+    /* Tic-Tac-Toe */
+    #tic-tac-toe h2 {
+      color: #0072ff;
+      margin-bottom: 15px;
+    }
+    #tic-tac-toe .ttt-board {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      grid-template-rows: repeat(3, 80px);
+      gap: 8px;
+      justify-content: center;
+      margin: auto;
+      user-select: none;
+    }
+    #tic-tac-toe .ttt-cell {
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 48px;
+      cursor: pointer;
+      border-radius: 10px;
+      color: #0072ff;
+      font-weight: bold;
+      user-select:none;
+      user-drag:none;
+    }
+    #tic-tac-toe .ttt-cell.disabled {
+      cursor: not-allowed;
+      color: #999;
+    }
+    #tic-tac-toe button {
+      margin-top: 15px;
+      background: #0072ff;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      user-select: none;
+    }
+    #tic-tac-toe button:hover {
+      background: #0056b3;
+    }
+    #tic-tac-toe #ttt-message {
+      margin-top: 15px;
+      font-weight: bold;
+      min-height: 1.5em;
+    }
+
+    /* Rock-Paper-Scissors */
+    #rps h2 {
+      color: #0072ff;
+      margin-bottom: 15px;
+    }
+    #rps .options {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+    #rps .options button {
+      font-size: 36px;
+      border-radius: 12px;
+      border: none;
+      background: #0072ff;
+      color: white;
+      width: 70px;
+      height: 70px;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    #rps .options button:hover {
+      background: #0056b3;
+    }
+    #rps #rps-message {
+      font-weight: bold;
+      min-height: 1.5em;
+      margin-bottom: 10px;
+    }
+    #rps button#rps-reset {
+      background: #ff5733;
+      width: auto;
+      height: auto;
+      padding: 8px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    #rps button#rps-reset:hover {
+      background: #c03d18;
+    }
+
+    /* Snake Game */
+    #snake h2 {
+      color: #0072ff;
+      margin-bottom: 10px;
+    }
+    #snake canvas {
+      background: #f0f0f0;
+      margin: auto;
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      user-select:none;
+      touch-action:none;
+    }
+    #snake #snake-score {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    #snake button {
+      margin-top: 15px;
+      background: #0072ff;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      user-select: none;
+    }
+    #snake button:hover {
+      background: #0056b3;
+    }
+
+    /* Click Counter */
+    #click h2 {
+      color: #0072ff;
+      margin-bottom: 15px;
+    }
+    #click button {
+      background: #0072ff;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      padding: 20px 40px;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    #click button:hover {
+      background: #0056b3;
+    }
+    #click p {
+      margin-top: 15px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* Typing Speed */
+    #typing h2 {
+      color: #0072ff;
+      margin-bottom: 10px;
+    }
+    #typing textarea {
+      width: 100%;
+      height: 100px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 16px;
+      resize: none;
+      user-select: text;
+      outline: none;
+    }
+    #typing #typing-text {
+      font-style: italic;
+      margin-bottom: 15px;
+      color: #555;
+    }
+    #typing button {
+      background: #0072ff;
+      border: none;
+      color: white;
+      padding: 10px 25px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    #typing button:hover {
+      background: #0056b3;
+    }
+    #typing #typing-result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 16px;
+      min-height: 1.5em;
+    }
+
+    /* Hangman */
+    #hangman h2 {
+      color: #0072ff;
+      margin-bottom: 15px;
+    }
+    #hangman .word-display {
+      font-size: 28px;
+      letter-spacing: 5px;
+      margin-bottom: 15px;
+      user-select:none;
+    }
+    #hangman .letters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      max-width: 300px;
+      margin: auto;
+    }
+    #hangman .letters button {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: none;
+      background: #0072ff;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    #hangman .letters button:disabled {
+      background: #888;
+      cursor: not-allowed;
+    }
+    #hangman #hangman-message {
+      margin-top: 15px;
+      font-weight: bold;
+      min-height: 1.5em;
+    }
+    #hangman button#hangman-reset {
+      margin-top: 15px;
+      padding: 10px 25px;
+      background: #0072ff;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+    }
+    #hangman button#hangman-reset:hover {
+      background: #0056b3;
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 400px) {
+      .games-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .ludo-board {
+        grid-template-columns: repeat(15, 20px);
+        grid-template-rows: repeat(15, 20px);
+        gap: 1px;
+      }
+      .ludo-cell {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+      }
+      .player {
+        width: 12px;
+        height: 12px;
+      }
+      #tic-tac-toe .ttt-board {
+        grid-template-columns: repeat(3, 60px);
+        grid-template-rows: repeat(3, 60px);
+      }
+      #tic-tac-toe .ttt-cell {
+        font-size: 36px;
+      }
+      #rps .options button {
+        width: 50px;
+        height: 50px;
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🎮 Mini Games Hub</h1>
+    <h2>Developed By Sunam</h2>
+    <p>Select a game to play:</p>
+    <div class="games-grid" role="navigation" aria-label="Game selection">
+      <button id="btn-ludo" class="active" aria-pressed="true" onclick="selectGame('ludo', this)">🎲 Ludo</button>
+      <button id="btn-quiz" aria-pressed="false" onclick="selectGame('quiz', this)">🧠 Quiz</button>
+      <button id="btn-tictac" aria-pressed="false" onclick="selectGame('tic-tac-toe', this)">❌⭕ Tic-Tac-Toe</button>
+      <button id="btn-rps" aria-pressed="false" onclick="selectGame('rps', this)">✊✋✌ Rock-Paper-Scissors</button>
+      <button id="btn-snake" aria-pressed="false" onclick="selectGame('snake', this)">🐍 Snake</button>
+      <button id="btn-click" aria-pressed="false" onclick="selectGame('click', this)">🖱 Click Counter</button>
+      <button id="btn-typing" aria-pressed="false" onclick="selectGame('typing', this)">⌨️ Typing Speed</button>
+      <button id="btn-hangman" aria-pressed="false" onclick="selectGame('hangman', this)">🕴 Hangman</button>
+    </div>
+
+    <!-- Ludo Game -->
+    <section id="ludo" class="game active" aria-label="Ludo game">
+      <h1>Ludo Game</h1>
+      <div class="ludo-board" id="board" aria-label="Ludo Board"></div>
+      <div id="dice" class="dice" aria-live="polite" aria-atomic="true">🎲</div>
+      <div class="ludo-controls">
+        <button id="roll-btn" onclick="rollDice()">Roll Dice</button>
+      </div>
+      <p id="turn" aria-live="polite" aria-atomic="true">Player 1's Turn</p>
+      <p id="ludo-message" role="alert"></p>
+    </section>
+
+    <!-- Quiz Game -->
+    <section id="quiz" class="game" aria-label="Quiz game" role="main">
+      <h2>Quiz Game</h2>
+      <div class="question" id="quiz-question"></div>
+      <div class="answers" id="quiz-answers"></div>
+      <button id="quiz-next" class="next-btn" disabled>Next Question</button>
+      <p class="score" id="quiz-score"></p>
+    </section>
+
+    <!-- Tic-Tac-Toe -->
+    <section id="tic-tac-toe" class="game" aria-label="Tic-Tac-Toe game">
+      <h2>Tic-Tac-Toe</h2>
+      <div class="ttt-board" id="ttt-board" role="grid" aria-label="Tic Tac Toe Board"></div>
+      <p id="ttt-message" role="alert"></p>
+      <button id="ttt-reset">Restart Game</button>
+    </section>
+
+    <!-- Rock-Paper-Scissors -->
+    <section id="rps" class="game" aria-label="Rock-Paper-Scissors game">
+      <h2>Rock-Paper-Scissors</h2>
+      <div class="options" role="radiogroup" aria-label="Rock, Paper, Scissors options">
+        <button aria-label="Rock" data-choice="rock">✊</button>
+        <button aria-label="Paper" data-choice="paper">✋</button>
+        <button aria-label="Scissors" data-choice="scissors">✌️</button>
+      </div>
+      <p id="rps-message" role="alert"></p>
+      <button id="rps-reset" hidden>Play Again</button>
+    </section>
+
+    <!-- Snake Game -->
+    <section id="snake" class="game" aria-label="Snake game">
+      <h2>Snake Game</h2>
+      <canvas id="snake-canvas" width="300" height="300" aria-label="Snake game area"></canvas>
+      <p id="snake-score">Score: 0</p>
+      <button id="snake-start">Start Game</button>
+    </section>
+
+    <!-- Click Counter -->
+    <section id="click" class="game" aria-label="Click Counter game">
+      <h2>Click Counter</h2>
+      <button id="click-btn">Click Me!</button>
+      <p id="click-count">Clicks: 0</p>
+      <button id="click-reset" style="margin-top:10px; background:#ff5733;">Reset</button>
+    </section>
+
+    <!-- Typing Speed -->
+    <section id="typing" class="game" aria-label="Typing Speed game">
+      <h2>Typing Speed Test</h2>
+      <p id="typing-text">The quick brown fox jumps over the lazy dog.</p>
+      <textarea id="typing-input" placeholder="Start typing here..." disabled aria-label="Typing input"></textarea>
+      <br>
+      <button id="typing-start">Start Test</button>
+      <p id="typing-result" role="alert"></p>
+    </section>
+
+    <!-- Hangman -->
+    <section id="hangman" class="game" aria-label="Hangman game">
+      <h2>Hangman</h2>
+      <div class="word-display" id="hangman-word" aria-live="polite" aria-atomic="true">_ _ _ _ _</div>
+      <div class="letters" id="hangman-letters" role="group" aria-label="Alphabet letters"></div>
+      <p id="hangman-message" role="alert"></p>
+      <button id="hangman-reset">New Game</button>
+    </section>
+
+  </div>
+
+  <script>
+    /* GAME SELECTION LOGIC */
+    function selectGame(gameId, btn) {
+      // Toggle button active states and aria-pressed
+      const allButtons = document.querySelectorAll('.games-grid button');
+      allButtons.forEach(button => {
+        button.classList.remove('active');
+        button.setAttribute('aria-pressed','false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed','true');
+      // Show selected game container, hide others
+      document.querySelectorAll('.game').forEach(game => {
+        game.classList.remove('active');
+      });
+      const selectedGame = document.getElementById(gameId);
+      selectedGame.classList.add('active');
+
+      // If the game has any start/reset method, call to reset or initialize
+      if(gameId === 'ludo') {
+        resetLudoGame();
+      } else if(gameId === 'quiz') {
+        resetQuiz();
+      } else if(gameId === 'tic-tac-toe') {
+        resetTicTacToe();
+      } else if(gameId === 'rps') {
+        resetRPS();
+      } else if(gameId === 'snake') {
+        resetSnake();
+      } else if(gameId === 'click') {
+        resetClickCounter();
+      } else if(gameId === 'typing') {
+        resetTyping();
+      } else if(gameId === 'hangman'){
+        resetHangman();
+      }
+    }
+
+
+    /* ========== LUDO GAME ========== */
+    let currentPlayer = 1;
+    let playerPositions = [0, 0];
+    const boardSize = 15;
+    let cells = [];
+    let gameEnded = false;
+    const totalCells = boardSize * boardSize;
+
+    function initBoard() {
+      const board = document.getElementById("board");
+      board.innerHTML = '';
+      cells = [];
+      for(let i=0; i<totalCells; i++){
+        const cell = document.createElement("div");
+        cell.classList.add("ludo-cell");
+        cell.setAttribute('aria-label', `Cell ${i+1}`);
+        cell.textContent = i+1;
+        board.appendChild(cell);
+        cells.push(cell);
+      }
+    }
+
+    function updateBoard(){
+      cells.forEach(cell => cell.innerHTML = '');
+      // Place player 1 and player 2 on board. If both in same cell, stack two dots side by side
+      if(playerPositions[0] < totalCells){
+        const p1Dot = document.createElement('div');
+        p1Dot.classList.add('player','player1');
+        p1Dot.setAttribute('aria-label', 'Player 1');
+        p1Dot.title = 'Player 1';
+        cells[playerPositions[0]].appendChild(p1Dot);
+      }
+      if(playerPositions[1] < totalCells){
+        const p2Dot = document.createElement('div');
+        p2Dot.classList.add('player','player2');
+        p2Dot.setAttribute('aria-label', 'Player 2');
+        p2Dot.title = 'Player 2';
+        if(playerPositions[0] === playerPositions[1]){
+          // If both players same cell, offset second dot
+          p2Dot.style.marginLeft = '18px';
+        }
+        cells[playerPositions[1]].appendChild(p2Dot);
+      }
+    }
+
+    function rollDice(){
+      if(gameEnded) return;
+      const dice = document.getElementById("dice");
+      const rollBtn = document.getElementById("roll-btn");
+      rollBtn.disabled = true; // disable button till move completes
+      const randomNumber = Math.floor(Math.random() * 6) + 1;
+      dice.textContent = randomNumber;
+      // Timeout for visual dice roll effect
+      setTimeout(()=>{
+        movePlayer(randomNumber);
+        rollBtn.disabled = false;
+      }, 500);
+    }
+
+    function movePlayer(roll){
+      if(gameEnded) return;
+      const turnDisplay = document.getElementById("turn");
+      const ludoMessage = document.getElementById("ludo-message");
+
+      let newPos = playerPositions[currentPlayer - 1] + roll;
+      if(newPos >= totalCells) {
+        newPos = totalCells - 1;
+        playerPositions[currentPlayer - 1] = newPos;
+        updateBoard();
+        ludoMessage.textContent = `Player ${currentPlayer} wins! 🎉`;
+        alert(`Player ${currentPlayer} wins! 🎉`);
+        gameEnded = true;
+        turnDisplay.textContent = `Game over`;
+        return;
+      }
+
+      playerPositions[currentPlayer - 1] = newPos;
+      updateBoard();
+
+      // Check if a player landed on the other's position, then send the other to start
+      let otherPlayer = currentPlayer === 1 ? 2 : 1;
+      if(playerPositions[currentPlayer - 1] === playerPositions[otherPlayer -1] && playerPositions[currentPlayer - 1] !== 0){
+        playerPositions[otherPlayer - 1] = 0;
+        ludoMessage.textContent = `Player ${currentPlayer} captured Player ${otherPlayer}'s token!`;
+        setTimeout(()=>{ludoMessage.textContent = '';}, 3000);
+        updateBoard();
+      } else {
+        ludoMessage.textContent = '';
+      }
+
+      // Change turn
+      currentPlayer = otherPlayer;
+      turnDisplay.textContent = `Player ${currentPlayer}'s Turn`;
+    }
+
+    function resetLudoGame(){
+      currentPlayer = 1;
+      playerPositions = [0,0];
+      gameEnded = false;
+      document.getElementById('dice').textContent = '🎲';
+      document.getElementById('turn').textContent = "Player 1's Turn";
+      document.getElementById('ludo-message').textContent = '';
+      initBoard();
+      updateBoard();
+      document.getElementById("roll-btn").disabled = false;
+    }
+    initBoard();
+    updateBoard();
+
+
+    /* ========== QUIZ GAME ========== */
+    const quizQuestions = [
+      {
+        question: "What is the capital of France?",
+        answers: ["Paris", "Berlin", "Rome", "Madrid"],
+        correct: 0
+      },
+      {
+        question: "Which planet is known as the Red Planet?",
+        answers: ["Earth", "Venus", "Mars", "Saturn"],
+        correct: 2
+      },
+      {
+        question: "What is the largest ocean on Earth?",
+        answers: ["Atlantic", "Indian", "Arctic", "Pacific"],
+        correct: 3
+      },
+      {
+        question: "Who wrote 'Romeo and Juliet'?",
+        answers: ["William Shakespeare", "Charles Dickens", "Leo Tolstoy", "Jane Austen"],
+        correct: 0
+      },
+      {
+        question: "What is the chemical symbol for gold?",
+        answers: ["Au", "Ag", "Fe", "Mg"],
+        correct: 0
+      }
+    ];
+
+    let quizCurrent=0;
+    let quizScore=0;
+
+    const quizQuestionElem = document.getElementById('quiz-question');
+    const quizAnswersElem = document.getElementById('quiz-answers');
+    const quizNextBtn = document.getElementById('quiz-next');
+    const quizScoreElem = document.getElementById('quiz-score');
+
+    function showQuizQuestion(){
+      quizQuestionElem.textContent = `Q${quizCurrent+1}: ${quizQuestions[quizCurrent].question}`;
+      quizAnswersElem.innerHTML = '';
+      quizNextBtn.disabled = true;
+      quizQuestions[quizCurrent].answers.forEach((ans, idx)=>{
+        const btn = document.createElement('button');
+        btn.textContent = ans;
+        btn.onclick = () => {
+          handleQuizAnswer(idx);
+        };
+        quizAnswersElem.appendChild(btn);
+      });
+    }
+
+    function handleQuizAnswer(selected){
+      // disable all buttons
+      [...quizAnswersElem.children].forEach(b=>b.disabled=true);
+      quizNextBtn.disabled = false;
+      if(selected === quizQuestions[quizCurrent].correct){
+        quizScore++;
+        quizAnswersElem.children[selected].style.backgroundColor = '#28a745'; // green
+      } else {
+        quizAnswersElem.children[selected].style.backgroundColor = '#dc3545'; // red
+        // Highlight correct answer
+        quizAnswersElem.children[quizQuestions[quizCurrent].correct].style.backgroundColor = '#28a745';
+      }
+    }
+
+    function resetQuiz(){
+      quizCurrent = 0;
+      quizScore = 0;
+      quizScoreElem.textContent = '';
+      quizNextBtn.disabled = true;
+      showQuizQuestion();
+    }
+
+    quizNextBtn.addEventListener('click', ()=>{
+      quizCurrent++;
+      if(quizCurrent >= quizQuestions.length){
+        quizQuestionElem.textContent = 'Quiz Complete!';
+        quizAnswersElem.innerHTML = '';
+        quizNextBtn.disabled = true;
+        quizScoreElem.textContent = `Your score: ${quizScore} / ${quizQuestions.length}`;
+      } else {
+        showQuizQuestion();
+      }
+    });
+    // Initialize quiz
+    // Will be triggered on game select
+
+
+    /* ========== TIC-TAC-TOE ========== */
+    const tttBoardElem = document.getElementById('ttt-board');
+    const tttMsgElem = document.getElementById('ttt-message');
+    const tttResetBtn = document.getElementById('ttt-reset');
+    let tttBoard = Array(9).fill(null);
+    let tttCurrentPlayer = 'X';
+    let tttGameOver = false;
+
+    function renderTicTacToe(){
+      tttBoardElem.innerHTML = '';
+      tttBoard.forEach((cell, i) => {
+        const cellDiv = document.createElement('div');
+        cellDiv.classList.add('ttt-cell');
+        if(tttGameOver || cell !== null) {
+          cellDiv.classList.add('disabled');
+        }
+        cellDiv.setAttribute('role','button');
+        cellDiv.setAttribute('aria-label', cell ? `Cell ${i+1} with ${cell}` : `Empty cell ${i+1}`);
+        cellDiv.setAttribute('tabindex', '0');
+        cellDiv.textContent = cell ? cell : '';
+        cellDiv.onclick = () => tttCellClicked(i);
+        cellDiv.onkeydown = e => {
+          if(e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            tttCellClicked(i);
+          }
+        };
+        tttBoardElem.appendChild(cellDiv);
+      });
+      updateTttStatus();
+    }
+
+    function tttCellClicked(index){
+      if(tttGameOver || tttBoard[index] !== null) return;
+      tttBoard[index] = tttCurrentPlayer;
+      if(checkTttWin(tttCurrentPlayer)){
+        tttGameOver = true;
+        tttMsgElem.textContent = `Player ${tttCurrentPlayer} wins! 🎉`;
+      } else if(tttBoard.every(cell=>cell !== null)){
+        tttGameOver = true;
+        tttMsgElem.textContent = `It's a draw!`;
+      } else {
+        tttCurrentPlayer = tttCurrentPlayer === 'X' ? 'O' : 'X';
+        tttMsgElem.textContent = `Player ${tttCurrentPlayer}'s turn`;
+      }
+      renderTicTacToe();
+    }
+
+    function checkTttWin(player){
+      const wins = [
+        [0,1,2],
+        [3,4,5],
+        [6,7,8],
+        [0,3,6],
+        [1,4,7],
+        [2,5,8],
+        [0,4,8],
+        [2,4,6]
+      ];
+      return wins.some(indices => indices.every(i => tttBoard[i] === player));
+    }
+
+    function updateTttStatus(){
+      if(!tttGameOver){
+        tttMsgElem.textContent = `Player ${tttCurrentPlayer}'s turn`;
+      }
+    }
+
+    function resetTicTacToe(){
+      tttBoard = Array(9).fill(null);
+      tttCurrentPlayer = 'X';
+      tttGameOver = false;
+      tttMsgElem.textContent = '';
+      renderTicTacToe();
+    }
+    tttResetBtn.addEventListener('click', resetTicTacToe);
+
+
+    /* ========== ROCK-PAPER-SCISSORS ========== */
+    const rpsOptions = ['rock', 'paper', 'scissors'];
+    const rpsButtons = document.querySelectorAll('#rps .options button');
+    const rpsMessage = document.getElementById('rps-message');
+    const rpsResetBtn = document.getElementById('rps-reset');
+
+    function rpsComputerChoice(){
+      return rpsOptions[Math.floor(Math.random() * 3)];
+    }
+
+    function rpsCompare(user, comp) {
+      if(user === comp) return 'Draw!';
+      if((user==='rock'&&comp==='scissors')||(user==='paper'&&comp==='rock')||(user==='scissors'&&comp==='paper')){
+        return 'You win! 🎉';
+      }
+      return 'You lose!';
+    }
+
+    rpsButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const userChoice = btn.getAttribute('data-choice');
+        const compChoice = rpsComputerChoice();
+        rpsMessage.textContent = `You chose ${userChoice}, computer chose ${compChoice}. ${rpsCompare(userChoice, compChoice)}`;
+        // Disable choices, show reset
+        rpsButtons.forEach(b=>b.disabled=true);
+        rpsResetBtn.hidden = false;
+      });
+    });
+
+    rpsResetBtn.addEventListener('click', resetRPS);
+
+    function resetRPS(){
+      rpsMessage.textContent = '';
+      rpsButtons.forEach(b=>{
+        b.disabled = false;
+      });
+      rpsResetBtn.hidden = true;
+    }
+    resetRPS();
+
+
+    /* ========== SNAKE GAME ========== */
+    const snakeCanvas = document.getElementById('snake-canvas');
+    const snakeCtx = snakeCanvas.getContext('2d');
+    const snakeStartBtn = document.getElementById('snake-start');
+    const snakeScoreElem = document.getElementById('snake-score');
+
+    const snakeGridSize = 15; // How many cells per row/column (square grid)
+    const cellSize = snakeCanvas.width / snakeGridSize;
+
+    let snake = [];
+    let snakeDir = {x:1, y:0};
+    let apple = {};
+    let snakeScore = 0;
+    let snakeGameInterval;
+    let snakeGameRunning = false;
+
+    function resetSnake(){
+      clearInterval(snakeGameInterval);
+      snakeGameRunning = false;
+      snake = [{x:7,y:7}];
+      snakeDir = {x:1, y:0};
+      snakeScore = 0;
+      placeApple();
+      drawSnake();
+      snakeScoreElem.textContent = `Score: 0`;
+      snakeStartBtn.textContent = 'Start Game';
+    }
+
+    function placeApple(){
+      while(true){
+        apple = {
+          x: Math.floor(Math.random() * snakeGridSize),
+          y: Math.floor(Math.random() * snakeGridSize)
+        };
+        if(!snake.some(s=>s.x===apple.x && s.y===apple.y)) break;
+      }
+    }
+
+    function drawSnake(){
+      snakeCtx.fillStyle = '#f0f0f0';
+      snakeCtx.fillRect(0,0,snakeCanvas.width,snakeCanvas.height);
+      snakeCtx.fillStyle = '#0072ff';
+      snake.forEach(s => {
+        snakeCtx.fillRect(s.x*cellSize, s.y*cellSize, cellSize,cellSize);
+      });
+      snakeCtx.fillStyle = '#ff5733';
+      snakeCtx.beginPath();
+      snakeCtx.arc(apple.x*cellSize + cellSize/2, apple.y*cellSize + cellSize/2, cellSize/2, 0, Math.PI*2);
+      snakeCtx.fill();
+    }
+
+    function gameLoop() {
+      if(!snakeGameRunning) return;
+      const head = {...snake[0]};
+      head.x += snakeDir.x;
+      head.y += snakeDir.y;
+
+      // Wall collision
+      if(head.x < 0 || head.x >= snakeGridSize || head.y < 0 || head.y >= snakeGridSize){
+        endSnakeGame();
+        return;
+      }
+      // Self collision
+      if(snake.some(s => s.x === head.x && s.y === head.y)){
+        endSnakeGame();
+        return;
+      }
+      snake.unshift(head);
+
+      if(head.x === apple.x && head.y === apple.y){
+        snakeScore++;
+        snakeScoreElem.textContent = `Score: ${snakeScore}`;
+        placeApple();
+      } else {
+        snake.pop();
+      }
+      drawSnake();
+    }
+
+    function endSnakeGame(){
+      snakeGameRunning = false;
+      alert(`Game Over! Your score was ${snakeScore}.`);
+      snakeStartBtn.textContent = "Start Game";
+    }
+
+    snakeStartBtn.addEventListener('click', () => {
+      if(snakeGameRunning){
+        snakeGameRunning = false;
+        snakeStartBtn.textContent = 'Start Game';
+      } else {
+        snakeGameRunning = true;
+        snakeStartBtn.textContent = 'Pause Game';
+        gameLoop();
+        clearInterval(snakeGameInterval);
+        snakeGameInterval = setInterval(gameLoop, 150);
+      }
+    });
+
+    window.addEventListener('keydown', e => {
+      if(!snakeGameRunning) return;
+      // Prevent reverse directions
+      if(e.key === 'ArrowUp' && snakeDir.y !== 1) {
+        snakeDir = {x:0, y:-1};
+        e.preventDefault();
+      }
+      if(e.key === 'ArrowDown' && snakeDir.y !== -1) {
+        snakeDir = {x:0, y:1};
+        e.preventDefault();
+      }
+      if(e.key === 'ArrowLeft' && snakeDir.x !== 1) {
+        snakeDir = {x:-1, y:0};
+        e.preventDefault();
+      }
+      if(e.key === 'ArrowRight' && snakeDir.x !== -1) {
+        snakeDir = {x:1, y:0};
+        e.preventDefault();
+      }
+    });
+    resetSnake();
+
+
+    /* ========== CLICK COUNTER ========== */
+    const clickBtn = document.getElementById('click-btn');
+    const clickCountElem = document.getElementById('click-count');
+    const clickResetBtn = document.getElementById('click-reset');
+    let clickCounter = 0;
+
+    clickBtn.addEventListener('click', () => {
+      clickCounter++;
+      clickCountElem.textContent = `Clicks: ${clickCounter}`;
+    });
+
+    clickResetBtn.addEventListener('click', resetClickCounter);
+
+    function resetClickCounter(){
+      clickCounter = 0;
+      clickCountElem.textContent = 'Clicks: 0';
+    }
+    resetClickCounter();
+
+
+    /* ========== TYPING SPEED TEST ========== */
+    const typingInput = document.getElementById('typing-input');
+    const typingText = document.getElementById('typing-text');
+    const typingStartBtn = document.getElementById('typing-start');
+    const typingResult = document.getElementById('typing-result');
+
+    const typingSampleText = "The quick brown fox jumps over the lazy dog.";
+
+    let typingStartTime = null;
+
+    typingStartBtn.addEventListener('click', () => {
+      typingInput.value = '';
+      typingInput.disabled = false;
+      typingInput.focus();
+      typingResult.textContent = '';
+      typingStartBtn.disabled = true;
+      typingStartTime = null;
+    });
+
+    typingInput.addEventListener('input', () => {
+      if(typingStartTime === null) {
+        typingStartTime = new Date().getTime();
+      }
+      if(typingInput.value === typingSampleText){
+        // Calculate typing speed
+        let elapsedSecs = (new Date().getTime() - typingStartTime)/1000;
+        let words = typingSampleText.split(' ').length;
+        let wpm = Math.round((words / elapsedSecs) * 60);
+        typingResult.textContent = `Congrats! You typed at ${wpm} words per minute.`;
+        typingInput.disabled = true;
+        typingStartBtn.disabled = false;
+      }
+    });
+
+    function resetTyping(){
+      typingInput.value = '';
+      typingInput.disabled = true;
+      typingResult.textContent = '';
+      typingStartBtn.disabled = false;
+    }
+    resetTyping();
+
+
+    /* ========== HANGMAN ========== */
+    const hangmanWords = ["javascript", "hangman", "browser", "developer", "function", "variable", "document", "window", "element"];
+    let hangmanWord = "";
+    let hangmanGuesses = [];
+    let hangmanMaxWrong = 6;
+    let hangmanWrong = 0;
+
+    const hangmanWordElem = document.getElementById('hangman-word');
+    const hangmanLettersElem = document.getElementById('hangman-letters');
+    const hangmanMessageElem = document.getElementById('hangman-message');
+    const hangmanResetBtn = document.getElementById('hangman-reset');
+
+    function pickHangmanWord(){
+      const idx = Math.floor(Math.random() * hangmanWords.length);
+      return hangmanWords[idx];
+    }
+
+    function renderHangmanWord(){
+      let display = '';
+      for(let ch of hangmanWord){
+        if(hangmanGuesses.includes(ch)){
+          display += ch + ' ';
+        } else {
+          display += '_ ';
+        }
+      }
+      hangmanWordElem.textContent = display.trim();
+    }
+
+    function createAlphabetButtons(){
+      hangmanLettersElem.innerHTML = '';
+      for(let i=97; i <= 122; i++){
+        const letter = String.fromCharCode(i);
+        const btn = document.createElement('button');
+        btn.textContent = letter;
+        btn.setAttribute('aria-label', `Guess letter ${letter}`);
+        btn.onclick = () => hangmanGuess(letter);
+        hangmanLettersElem.appendChild(btn);
+      }
+    }
+
+    function hangmanGuess(letter){
+      if(hangmanGuesses.includes(letter)) return;
+      hangmanGuesses.push(letter);
+
+      const buttons = hangmanLettersElem.querySelectorAll('button');
+      buttons.forEach(btn => {
+        if(btn.textContent === letter) btn.disabled = true;
+      });
+
+      if(hangmanWord.includes(letter)){
+        renderHangmanWord();
+        hangmanMessageElem.textContent = 'Good guess!';
+      } else {
+        hangmanWrong++;
+        hangmanMessageElem.textContent = `Wrong guess ${hangmanWrong} of ${hangmanMaxWrong}`;
+      }
+
+      // Check win
+      if(hangmanWord.split('').every(ch => hangmanGuesses.includes(ch))){
+        hangmanMessageElem.textContent = `🎉 You won! The word was "${hangmanWord}".`;
+        disableHangmanButtons();
+      } else if(hangmanWrong >= hangmanMaxWrong){
+        hangmanMessageElem.textContent = `Game over! The word was "${hangmanWord}".`;
+        disableHangmanButtons();
+      }
+    }
+
+    function disableHangmanButtons(){
+      hangmanLettersElem.querySelectorAll('button').forEach(b=>b.disabled=true);
+    }
+
+    function resetHangman(){
+      hangmanWord = pickHangmanWord();
+      hangmanGuesses = [];
+      hangmanWrong = 0;
+      hangmanMessageElem.textContent = '';
+      hangmanWordElem.textContent = '';
+      createAlphabetButtons();
+      renderHangmanWord();
+    }
+    hangmanResetBtn.addEventListener('click', resetHangman);
+    resetHangman();
+
+  </script>
+
+</body>
+</html>
+
