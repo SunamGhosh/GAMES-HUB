@@ -456,6 +456,14 @@
         height: 50px;
         font-size: 28px;
       }
+      #carCanvas {
+  background: #333;
+  display: block;
+  margin: 10px auto;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #000;
+}
+
     }
   </style>
 </head>
@@ -474,6 +482,11 @@
       <button id="btn-click" aria-pressed="false" onclick="selectGame('click', this)">🖱 Click Counter</button>
       <button id="btn-typing" aria-pressed="false" onclick="selectGame('typing', this)">⌨️ Typing Speed</button>
       <button id="btn-hangman" aria-pressed="false" onclick="selectGame('hangman', this)">🕴 Hangman</button>
+         <button id="btn-car" aria-pressed="false" onclick="selectGame('car-racing', this)"
+  style="display: flex; align-items: center; gap: 8px; padding: 8px 12px;">
+  <img src="car.png" alt="Car Image" style="width: 50px; height: auto; display: block;">
+  Car Racing
+</button>
     </div>
 
     <!-- Ludo Game -->
@@ -550,6 +563,15 @@
       <div class="letters" id="hangman-letters" role="group" aria-label="Alphabet letters"></div>
       <p id="hangman-message" role="alert"></p>
       <button id="hangman-reset">New Game</button>
+    </section>
+    <section class="game" id="car-racing">
+       <h2>Car Racing</h2>
+    <div >
+ 
+  <canvas id="carCanvas" width="300" height="500"></canvas>
+  <p id="car-score">Score: 0</p>
+  <button onclick="startCarGame()">Start Game</button>
+</div>
     </section>
 
   </div>
@@ -1177,6 +1199,101 @@
     }
     hangmanResetBtn.addEventListener('click', resetHangman);
     resetHangman();
+
+
+
+
+    // car racing
+  // Load images
+let carImage = new Image();
+carImage.src = 'car.png'; // Replace with the actual path to your car image
+
+let obstacleImage = new Image();
+obstacleImage.src = 'obstacle.png'; // Replace with the actual path to your obstacle image
+
+let carCanvas, ctx, carX = 125, carY = 420, carWidth = 50, carHeight = 80;
+let obstacles = [];
+let carScore = 0;
+let carGameInterval, carObstacleInterval, carScoreInterval;
+let isCarGameRunning = false;
+
+function drawCar() {
+  ctx.drawImage(carImage, carX, carY, carWidth, carHeight);
+}
+
+function drawObstacle(obstacle) {
+  ctx.drawImage(obstacleImage, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+}
+
+function moveObstacles() {
+  for (let obs of obstacles) {
+    obs.y += 4;
+  }
+  obstacles = obstacles.filter(obs => obs.y < carCanvas.height);
+}
+
+function checkCollision() {
+  for (let obs of obstacles) {
+    if (
+      carX < obs.x + obs.width &&
+      carX + carWidth > obs.x &&
+      carY < obs.y + obs.height &&
+      carY + carHeight > obs.y
+    ) {
+      stopCarGame();
+      alert("Game Over! Final Score: " + carScore);
+      return true;
+    }
+  }
+  return false;
+}
+
+function addObstacle() {
+  const width = 50; // Width of the obstacle
+  const x = Math.floor(Math.random() * (carCanvas.width - width));
+  obstacles.push({ x, y: -80, width, height: 80 });
+}
+
+function updateCarGame() {
+  ctx.clearRect(0, 0, carCanvas.width, carCanvas.height);
+  drawCar();
+  for (let obs of obstacles) drawObstacle(obs);
+  moveObstacles();
+  checkCollision();
+}
+
+function startCarGame() {
+  if (isCarGameRunning) return;
+  carCanvas = document.getElementById("carCanvas");
+  ctx = carCanvas.getContext("2d");
+  carX = 125;
+  obstacles = [];
+  carScore = 0;
+  isCarGameRunning = true;
+
+  document.getElementById("car-score").innerText = "Score: 0";
+
+  carGameInterval = setInterval(updateCarGame, 30);
+  carObstacleInterval = setInterval(addObstacle, 1500);
+  carScoreInterval = setInterval(() => {
+    carScore++;
+    document.getElementById("car-score").innerText = "Score: " + carScore;
+  }, 1000);
+}
+
+function stopCarGame() {
+  clearInterval(carGameInterval);
+  clearInterval(carObstacleInterval);
+  clearInterval(carScoreInterval);
+  isCarGameRunning = false;
+}
+
+// Keyboard movement
+document.addEventListener("keydown", (e) => {
+  if (!isCarGameRunning) return;
+  if (e.key === "ArrowLeft" && carX > 0) carX -= 20;
+  if (e.key === "ArrowRight" && carX + carWidth < carCanvas.width) carX += 20;
+});
 
   </script>
 
